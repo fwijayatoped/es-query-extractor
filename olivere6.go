@@ -1,4 +1,4 @@
-package esmonitoring
+package esqueryextractor
 
 import (
 	"context"

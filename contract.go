@@ -1,4 +1,4 @@
-package esmonitoring
+package esqueryextractor
 
 type Contract interface {
 	WithPath(path string) Contract
