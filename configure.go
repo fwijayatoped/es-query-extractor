@@ -13,8 +13,7 @@ type Client struct {
 }
 
 type Olivere6Client struct {
-	client                *elasticV6.Client
-	originalTargetAddress string
+	client *elasticV6.Client
 }
 
 type ClientOptionFunc func(*Client) error
@@ -52,16 +51,15 @@ func SetHttpClient(httpClient *http.Client) ClientOptionFunc {
 	}
 }
 
-func SetOlivereV6Client(elasticV6Client *elasticV6.Client, originalTarget string) ClientOptionFunc {
+func SetOlivereV6Client(elasticV6Client *elasticV6.Client) ClientOptionFunc {
 	return func(c *Client) error {
 		c.olivereV6Client.client = elasticV6Client
-		c.olivereV6Client.originalTargetAddress = originalTarget
 		return nil
 	}
 }
 
-func (c *Client) GetOlivere6Client() *Olivere6Client {
-	return &c.olivereV6Client
+func (c *Client) GetOlivere6Client() *elasticV6.Client {
+	return c.olivereV6Client.client
 }
 
 func (c *Client) GetService() string {
