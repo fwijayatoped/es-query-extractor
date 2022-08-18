@@ -15,7 +15,7 @@ type Olivere6Contract interface {
 	Send(searchService elastic.SearchService)
 }
 
-func NewOlivere6Session() Contract {
+func NewOlivere6Session() Olivere6Contract {
 	return &Olivere6Builder{}
 }
 
