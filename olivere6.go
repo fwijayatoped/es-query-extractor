@@ -11,6 +11,10 @@ type Olivere6Builder struct {
 	commonAttribute CommonAttributeContract
 }
 
+func (b *Olivere6Builder) GetOlivere6Client() {
+
+}
+
 func NewOlivere6Session(c *Olivere6Client) Contract {
 	return &Olivere6Builder{
 		c: c,
