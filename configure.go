@@ -60,8 +60,8 @@ func SetOlivereV6Client(elasticV6Client *elasticV6.Client, originalTarget string
 	}
 }
 
-func (c *Client) GetOlivere6Client() Olivere6Client {
-	return c.olivereV6Client
+func (c *Client) GetOlivere6Client() *Olivere6Client {
+	return &c.olivereV6Client
 }
 
 func (c *Client) GetService() string {

@@ -7,18 +7,11 @@ import (
 )
 
 type Olivere6Builder struct {
-	c               *Olivere6Client
 	commonAttribute CommonAttributeContract
 }
 
-func (b *Olivere6Builder) GetOlivere6Client() {
-
-}
-
-func NewOlivere6Session(c *Olivere6Client) Contract {
-	return &Olivere6Builder{
-		c: c,
-	}
+func NewOlivere6Session() Contract {
+	return &Olivere6Builder{}
 }
 
 func (b *Olivere6Builder) WithPath(path string) Contract {
