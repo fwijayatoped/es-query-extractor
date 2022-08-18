@@ -10,6 +10,11 @@ type Olivere6Builder struct {
 	commonAttribute CommonAttributeContract
 }
 
+type Olivere6Contract interface {
+	Contract
+	Send(searchService elastic.SearchService)
+}
+
 func NewOlivere6Session() Contract {
 	return &Olivere6Builder{}
 }
