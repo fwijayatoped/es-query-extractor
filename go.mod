@@ -1,4 +1,4 @@
-module github.com/fwijayatoped/esqueryextractor
+module github.com/fwijayatoped/es-query-extractor
 
 go 1.18
 
