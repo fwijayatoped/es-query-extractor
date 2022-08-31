@@ -14,7 +14,7 @@ type Olivere6Builder struct {
 type Olivere6Contract interface {
 	WithQueryString(querystring string) Olivere6Contract
 	WithExtraAttributes(attributes map[string]string) Olivere6Contract
-	Send(searchService elastic.SearchService)
+	SendSearchService(searchService elastic.SearchService)
 }
 
 // Start new session
@@ -34,8 +34,9 @@ func (b *Olivere6Builder) WithExtraAttributes(attributes map[string]string) Oliv
 	return b
 }
 
-// Send the request via olivere6 client lib
-func (b *Olivere6Builder) Send(searchService elastic.SearchService) {
+// SendSearchService the request via olivere6 client lib
+func (b *Olivere6Builder) SendSearchService(searchService elastic.SearchService) {
+	searchService.Header("User-Agent", "ESQueryExtractor")
 	go func() {
 		for k, v := range b.commonAttribute.extraAttributes {
 			searchService.Header(k, v)
