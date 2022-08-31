@@ -23,5 +23,5 @@ To extract your es query and send it to the service based on defined client.
 	)
 
 	ss := elastic.NewSearchService(esClient).Query(elastic.NewBoolQuery().Must(elastic.NewExistsQuery("feri")))
-	qe.Send(*ss)
+	qe.SendSearchService(*ss)
 ```
