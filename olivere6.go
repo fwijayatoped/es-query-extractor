@@ -10,30 +10,31 @@ type Olivere6Builder struct {
 	commonAttribute CommonAttributeContract
 }
 
+// Interface if client using olivere6 client lib
 type Olivere6Contract interface {
-	Contract
+	WithQueryString(querystring string) Olivere6Contract
+	WithExtraAttributes(attributes map[string]string) Olivere6Contract
 	Send(searchService elastic.SearchService)
 }
 
+// Start new session
 func NewOlivere6Session() Olivere6Contract {
 	return &Olivere6Builder{}
 }
 
-func (b *Olivere6Builder) WithPath(path string) Contract {
-	b.commonAttribute.path = path
-	return b
-}
-
-func (b *Olivere6Builder) WithQueryString(querystring string) Contract {
+// Define the query string from user
+func (b *Olivere6Builder) WithQueryString(querystring string) Olivere6Contract {
 	b.commonAttribute.querystring = querystring
 	return b
 }
 
-func (b *Olivere6Builder) WithExtraAttributes(attributes map[string]string) Contract {
+// Define the extra attributes that will be sent as header request
+func (b *Olivere6Builder) WithExtraAttributes(attributes map[string]string) Olivere6Contract {
 	b.commonAttribute.extraAttributes = attributes
 	return b
 }
 
+// Send the request via olivere6 client lib
 func (b *Olivere6Builder) Send(searchService elastic.SearchService) {
 	go func() {
 		for k, v := range b.commonAttribute.extraAttributes {
@@ -41,5 +42,4 @@ func (b *Olivere6Builder) Send(searchService elastic.SearchService) {
 		}
 		searchService.Do(context.Background())
 	}()
-
 }

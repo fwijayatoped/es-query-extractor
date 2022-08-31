@@ -6,15 +6,14 @@ import (
 	elasticV6 "gopkg.in/olivere/elastic.v6"
 )
 
+// Contains all possible client that supported by this package
 type Client struct {
 	httpClient      *http.Client
 	service         string
 	olivereV6Client Olivere6Client
 }
 
-type Olivere6Client struct {
-	client *elasticV6.Client
-}
+type Olivere6Client *elasticV6.Client
 
 type ClientOptionFunc func(*Client) error
 
@@ -53,13 +52,13 @@ func SetHttpClient(httpClient *http.Client) ClientOptionFunc {
 
 func SetOlivereV6Client(elasticV6Client *elasticV6.Client) ClientOptionFunc {
 	return func(c *Client) error {
-		c.olivereV6Client.client = elasticV6Client
+		c.olivereV6Client = elasticV6Client
 		return nil
 	}
 }
 
 func (c *Client) GetOlivere6Client() *elasticV6.Client {
-	return c.olivereV6Client.client
+	return c.olivereV6Client
 }
 
 func (c *Client) GetService() string {

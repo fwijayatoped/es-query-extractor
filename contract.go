@@ -1,11 +1,6 @@
 package esqueryextractor
 
-type Contract interface {
-	WithPath(path string) Contract
-	WithQueryString(querystring string) Contract
-	WithExtraAttributes(attributes map[string]string) Contract
-}
-
+// Common attribute contract for any client lib extractor
 type CommonAttributeContract struct {
 	path            string
 	querystring     string
