@@ -54,7 +54,6 @@ func (b *Olivere6Builder) WithUsecase(usecase string) Olivere6Contract {
 // SendSearchService the request via olivere6 client lib
 func (b *Olivere6Builder) SendSearchService(searchService elastic.SearchService) {
 	go func() {
-		searchService.Header("User-Agent", "ESQueryExtractor")
 		searchService.Header("Service", string(b.commonAttribute.service))
 		searchService.Header("Usecase", b.commonAttribute.usecase)
 
