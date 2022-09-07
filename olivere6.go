@@ -19,12 +19,14 @@ type Olivere6Contract interface {
 	SendSearchService(searchService elastic.SearchService)
 }
 
+const DefaultUsecase = "undefined"
+
 // Start new session
 func NewOlivere6Session(service Service) Olivere6Contract {
 	return &Olivere6Builder{
 		commonAttribute: CommonAttributeContract{
 			service: service,
-			usecase: "undefined",
+			usecase: DefaultUsecase,
 		},
 	}
 }
