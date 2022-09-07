@@ -1,17 +1,16 @@
 package esqueryextractor
 
 import (
-	"net/http"
-
 	elasticV6 "gopkg.in/olivere/elastic.v6"
 )
 
 // Contains all possible client that supported by this package
 type Client struct {
-	httpClient      *http.Client
-	service         string
+	service         Service
 	olivereV6Client Olivere6Client
 }
+
+type Service string
 
 type Olivere6Client *elasticV6.Client
 
@@ -21,8 +20,7 @@ const DefaultService = "undefined"
 
 func Initialize(options ...ClientOptionFunc) (*Client, error) {
 	c := &Client{
-		service:    DefaultService,
-		httpClient: http.DefaultClient,
+		service: DefaultService,
 	}
 
 	for _, option := range options {
@@ -32,20 +30,9 @@ func Initialize(options ...ClientOptionFunc) (*Client, error) {
 	return c, nil
 }
 
-func SetService(service string) ClientOptionFunc {
+func SetService(service Service) ClientOptionFunc {
 	return func(c *Client) error {
 		c.service = service
-		return nil
-	}
-}
-
-func SetHttpClient(httpClient *http.Client) ClientOptionFunc {
-	return func(c *Client) error {
-		if httpClient != nil {
-			c.httpClient = httpClient
-		} else {
-			c.httpClient = http.DefaultClient
-		}
 		return nil
 	}
 }
@@ -61,6 +48,6 @@ func (c *Client) GetOlivere6Client() *elasticV6.Client {
 	return c.olivereV6Client
 }
 
-func (c *Client) GetService() string {
+func (c *Client) GetService() Service {
 	return c.service
 }
