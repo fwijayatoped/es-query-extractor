@@ -2,7 +2,7 @@
 To extract your es query and send it to the service based on defined client.
 
 ## Supported Client
-* oliverev6
+* oliverev6, currently only support searchservice
 ```
 	esClient, _ := elastic.NewClient(
 		elastic.SetURL("http://localhost:8090"),
@@ -16,11 +16,11 @@ To extract your es query and send it to the service based on defined client.
 		queryExtractor.SetOlivereV6Client(esClient),
 	)
 
-	qe := queryExtractor.NewOlivere6Session().WithExtraAttributes(
-		map[string]string{
-			"service": Client.GetService(),
-		},
+	qe := queryExtractor.NewOlivere6Session(
+		Client.GetService(),
 	)
+
+	qe.WithFullPath("fullpath").WithKeyword("keyword").WithUsecase("myusecase")
 
 	ss := elastic.NewSearchService(esClient).Query(elastic.NewBoolQuery().Must(elastic.NewExistsQuery("feri")))
 	qe.SendSearchService(*ss)
