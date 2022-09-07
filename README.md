@@ -2,7 +2,7 @@
 To extract your es query and send it to the service based on defined client.
 
 ## Supported Client
-* oliverev6, currently only support searchservice
+* oliverev6, currently support search,count,mget,msearch
 ```
 	esClient, _ := elastic.NewClient(
 		elastic.SetURL("http://localhost:8090"),
