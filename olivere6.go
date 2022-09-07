@@ -54,19 +54,72 @@ func (b *Olivere6Builder) WithUsecase(usecase string) Olivere6Contract {
 }
 
 // SendSearchService the request via olivere6 client lib
-func (b *Olivere6Builder) SendSearchService(searchService elastic.SearchService) {
+func (b *Olivere6Builder) SendSearchService(service elastic.SearchService) {
 	go func() {
-		searchService.Header("Service", string(b.commonAttribute.service))
-		searchService.Header("Usecase", b.commonAttribute.usecase)
+		service.Header("Service", string(b.commonAttribute.service))
+		service.Header("Usecase", b.commonAttribute.usecase)
 
 		if b.keyword != "" {
-			searchService.Header("Keyword", b.keyword)
+			service.Header("Keyword", b.keyword)
 		}
 
 		if b.commonAttribute.fullPath != "" {
-			searchService.Header("Full-Path", b.commonAttribute.fullPath)
+			service.Header("Full-Path", b.commonAttribute.fullPath)
+		}
+		service.Do(context.Background())
+	}()
+}
+
+// SendCountService the request via olivere6 client lib
+func (b *Olivere6Builder) SendCountService(service elastic.CountService) {
+	go func() {
+		service.Header("Service", string(b.commonAttribute.service))
+		service.Header("Usecase", b.commonAttribute.usecase)
+
+		if b.keyword != "" {
+			service.Header("Keyword", b.keyword)
 		}
 
-		searchService.Do(context.Background())
+		if b.commonAttribute.fullPath != "" {
+			service.Header("Full-Path", b.commonAttribute.fullPath)
+		}
+
+		service.Do(context.Background())
+	}()
+}
+
+// SendMgetService the request via olivere6 client lib
+func (b *Olivere6Builder) SendMgetService(service elastic.MgetService) {
+	go func() {
+		service.Header("Service", string(b.commonAttribute.service))
+		service.Header("Usecase", b.commonAttribute.usecase)
+
+		if b.keyword != "" {
+			service.Header("Keyword", b.keyword)
+		}
+
+		if b.commonAttribute.fullPath != "" {
+			service.Header("Full-Path", b.commonAttribute.fullPath)
+		}
+
+		service.Do(context.Background())
+	}()
+}
+
+// SendMultiSearchService the request via olivere6 client lib
+func (b *Olivere6Builder) SendMultiSearchService(service elastic.MultiSearchService) {
+	go func() {
+		service.Header("Service", string(b.commonAttribute.service))
+		service.Header("Usecase", b.commonAttribute.usecase)
+
+		if b.keyword != "" {
+			service.Header("Keyword", b.keyword)
+		}
+
+		if b.commonAttribute.fullPath != "" {
+			service.Header("Full-Path", b.commonAttribute.fullPath)
+		}
+
+		service.Do(context.Background())
 	}()
 }
