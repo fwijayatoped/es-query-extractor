@@ -58,6 +58,7 @@ func (b *Olivere6Builder) SendSearchService(service elastic.SearchService) {
 	go func() {
 		service.Header("Service", string(b.commonAttribute.service))
 		service.Header("Usecase", b.commonAttribute.usecase)
+		service.Header("Query-Type", "_search")
 
 		if b.keyword != "" {
 			service.Header("Keyword", b.keyword)
@@ -75,6 +76,7 @@ func (b *Olivere6Builder) SendCountService(service elastic.CountService) {
 	go func() {
 		service.Header("Service", string(b.commonAttribute.service))
 		service.Header("Usecase", b.commonAttribute.usecase)
+		service.Header("Query-Type", "_count")
 
 		if b.keyword != "" {
 			service.Header("Keyword", b.keyword)
@@ -93,6 +95,7 @@ func (b *Olivere6Builder) SendMgetService(service elastic.MgetService) {
 	go func() {
 		service.Header("Service", string(b.commonAttribute.service))
 		service.Header("Usecase", b.commonAttribute.usecase)
+		service.Header("Query-Type", "_mget")
 
 		if b.keyword != "" {
 			service.Header("Keyword", b.keyword)
@@ -111,7 +114,7 @@ func (b *Olivere6Builder) SendMultiSearchService(service elastic.MultiSearchServ
 	go func() {
 		service.Header("Service", string(b.commonAttribute.service))
 		service.Header("Usecase", b.commonAttribute.usecase)
-
+		service.Header("Query-Type", "_msearch")
 		if b.keyword != "" {
 			service.Header("Keyword", b.keyword)
 		}
