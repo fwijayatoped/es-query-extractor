@@ -6,3 +6,9 @@ type CommonAttributeContract struct {
 	fullPath string
 	usecase  string
 }
+
+type Contract interface {
+	WithFullPath(string) Contract
+	WithKeyword(string) Contract
+	WithUsecase(string) Contract
+}
