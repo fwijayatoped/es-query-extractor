@@ -13,9 +13,7 @@ type Olivere6Builder struct {
 
 // Interface if client using olivere6 client lib
 type Olivere6Contract interface {
-	WithFullPath(string) Olivere6Contract
-	WithKeyword(string) Olivere6Contract
-	WithUsecase(string) Olivere6Contract
+	Contract
 	SendSearchService(searchService elastic.SearchService)
 }
 
@@ -33,7 +31,7 @@ func NewOlivere6Session(service Service) Olivere6Contract {
 
 // Full-Path:
 // Define the fullpath that will be sent as header request
-func (b *Olivere6Builder) WithFullPath(fullPath string) Olivere6Contract {
+func (b *Olivere6Builder) WithFullPath(fullPath string) Contract {
 	b.commonAttribute.fullPath = fullPath
 	return b
 }
@@ -41,14 +39,14 @@ func (b *Olivere6Builder) WithFullPath(fullPath string) Olivere6Contract {
 // Keyword:
 // Define the keyword that will be sent as header request,
 // can be empty just in case no keyword usecase
-func (b *Olivere6Builder) WithKeyword(keyword string) Olivere6Contract {
+func (b *Olivere6Builder) WithKeyword(keyword string) Contract {
 	b.keyword = keyword
 	return b
 }
 
 // Usecase:
 // Define the usecase that will be sent as header request
-func (b *Olivere6Builder) WithUsecase(usecase string) Olivere6Contract {
+func (b *Olivere6Builder) WithUsecase(usecase string) Contract {
 	b.commonAttribute.usecase = usecase
 	return b
 }
