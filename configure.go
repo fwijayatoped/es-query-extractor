@@ -22,17 +22,17 @@ type Olivere6Client *elasticV6.Client
 type ClientOptionFunc func(*Client) error
 
 type RateLimiter struct {
-	// maximum number of objects that can be created at a given time
+	// Maximum number of objects that can be created at a given time
 	maxSize int
-	// queue hold the request data
+	// Queue holds all the callback functions that are waiting to be executed
 	queue []func()
-	// time window for pool
+	// Time window for rate limiter
 	time time.Duration
-	// timer for each batch
+	// Timer for each batch of callback functions
 	timer *time.Timer
-	// size for each batch
+	// Number of callback functions that can be executed per time window
 	batchSize int
-	// channel hold the request data dddd
+	// Channel that holds callback functions that are waiting to be executed
 	ch chan func()
 }
 
@@ -111,16 +111,12 @@ func (r *RateLimiter) flush() {
 	if len(r.queue) < r.batchSize {
 		n = len(r.queue)
 	}
-	// Create a semaphohre to limit the n of concurrent goroutines
 	sema := make(chan struct{}, n)
 	log.Println("[INFO] Flushing queue. Processing", n, "requests.")
 	for _, callback := range r.queue {
-		// Acquire a token from the semaphore
 		sema <- struct{}{}
 		go func(callback func()) {
-			// Execute the request
 			callback()
-			// Release the token back to the semaphore
 			<-sema
 		}(callback)
 	}
