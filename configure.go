@@ -1,7 +1,6 @@
 package esqueryextractor
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -92,7 +91,7 @@ func (r *RateLimiter) schedule() {
 			r.flush()
 			if r.timer.C != nil && !r.timer.Stop() {
 				r.timer.Reset(r.time)
-				fmt.Println("[INFO] Timer has been reset")
+				log.Println("[INFO] Timer has been reset")
 			}
 			r.queue = make([]func(), 0)
 		case data := <-r.ch:
