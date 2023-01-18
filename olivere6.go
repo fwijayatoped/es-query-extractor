@@ -52,6 +52,13 @@ func (b *Olivere6Builder) WithUsecase(usecase string) Contract {
 	return b
 }
 
+// Debug-Mode:
+// Define that debug mode will be exclude rate limiter
+func (b *Olivere6Builder) WithDebugMode() Contract {
+	b.commonAttribute.debugMode = true
+	return b
+}
+
 // SendSearchService the request via olivere6 client lib
 func (b *Olivere6Builder) SendSearchService(service elastic.SearchService) {
 	service.Profile(true)
@@ -67,9 +74,15 @@ func (b *Olivere6Builder) SendSearchService(service elastic.SearchService) {
 		service.Header("Full-Path", b.commonAttribute.fullPath)
 	}
 
-	b.commonAttribute.rateLimiter.AddFunc(func() {
+	callback := func() {
 		service.Do(context.Background())
-	})
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
 
 // SendCountService the request via olivere6 client lib
@@ -86,9 +99,15 @@ func (b *Olivere6Builder) SendCountService(service elastic.CountService) {
 		service.Header("Full-Path", b.commonAttribute.fullPath)
 	}
 
-	b.commonAttribute.rateLimiter.AddFunc(func() {
+	callback := func() {
 		service.Do(context.Background())
-	})
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
 
 // SendMgetService the request via olivere6 client lib
@@ -105,9 +124,15 @@ func (b *Olivere6Builder) SendMgetService(service elastic.MgetService) {
 		service.Header("Full-Path", b.commonAttribute.fullPath)
 	}
 
-	b.commonAttribute.rateLimiter.AddFunc(func() {
+	callback := func() {
 		service.Do(context.Background())
-	})
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
 
 // SendMultiSearchService the request via olivere6 client lib
@@ -124,7 +149,13 @@ func (b *Olivere6Builder) SendMultiSearchService(service elastic.MultiSearchServ
 		service.Header("Full-Path", b.commonAttribute.fullPath)
 	}
 
-	b.commonAttribute.rateLimiter.AddFunc(func() {
+	callback := func() {
 		service.Do(context.Background())
-	})
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
