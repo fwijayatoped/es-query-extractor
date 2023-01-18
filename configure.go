@@ -1,6 +1,10 @@
 package esqueryextractor
 
 import (
+	"fmt"
+	"log"
+	"time"
+
 	elasticV6 "gopkg.in/olivere/elastic.v6"
 )
 
@@ -8,6 +12,7 @@ import (
 type Client struct {
 	service         Service
 	olivereV6Client Olivere6Client
+	rateLimiter     RateLimiter
 }
 
 type Service string
@@ -15,6 +20,21 @@ type Service string
 type Olivere6Client *elasticV6.Client
 
 type ClientOptionFunc func(*Client) error
+
+type RateLimiter struct {
+	// maximum number of objects that can be created at a given time
+	maxSize int
+	// queue hold the request data
+	queue []func()
+	// time window for pool
+	time time.Duration
+	// timer for each batch
+	timer *time.Timer
+	// size for each batch
+	batchSize int
+	// channel hold the request data dddd
+	ch chan func()
+}
 
 const DefaultService = "undefined"
 
@@ -44,10 +64,77 @@ func SetOlivereV6Client(elasticV6Client *elasticV6.Client) ClientOptionFunc {
 	}
 }
 
-func (c *Client) GetOlivere6Client() *elasticV6.Client {
-	return c.olivereV6Client
+func SetRateLimiter(maxSize int, sec int32, batchSize int, url string) ClientOptionFunc {
+	return func(c *Client) error {
+		rateLimiter := RateLimiter{
+			maxSize:   maxSize,
+			queue:     make([]func(), 0),
+			time:      time.Duration(sec * int32(time.Second)),
+			timer:     time.NewTimer(time.Duration(sec) * time.Second),
+			ch:        make(chan func(), 1),
+			batchSize: batchSize,
+		}
+		c.rateLimiter = rateLimiter
+		go c.rateLimiter.schedule()
+		return nil
+	}
+}
+
+func (r *RateLimiter) AddFunc(callback func()) {
+	r.ch <- callback
+}
+
+func (r *RateLimiter) schedule() {
+	for {
+		select {
+		case <-r.timer.C:
+			log.Println("[INFO] Timer has expired")
+			r.flush()
+			if r.timer.C != nil && !r.timer.Stop() {
+				r.timer.Reset(r.time)
+				fmt.Println("[INFO] Timer has been reset")
+			}
+			r.queue = make([]func(), 0)
+		case data := <-r.ch:
+			if len(r.queue) < r.maxSize {
+				r.queue = append(r.queue, data)
+				log.Println("[INFO] Added job to queue")
+			}
+		}
+
+	}
+
+}
+
+func (r *RateLimiter) flush() {
+	n := r.batchSize
+	if len(r.queue) < r.batchSize {
+		n = len(r.queue)
+	}
+	// Create a semaphohre to limit the n of concurrent goroutines
+	sema := make(chan struct{}, n)
+	log.Println("[INFO] Flushing queue. Processing", n, "requests.")
+	for _, callback := range r.queue {
+		// Acquire a token from the semaphore
+		sema <- struct{}{}
+		go func(callback func()) {
+			// Execute the request
+			callback()
+			// Release the token back to the semaphore
+			<-sema
+		}(callback)
+	}
+	log.Println("[INFO] Request executed. Token released.")
 }
 
 func (c *Client) GetService() Service {
 	return c.service
+}
+
+func (c *Client) GetOlivere6Client() *elasticV6.Client {
+	return c.olivereV6Client
+}
+
+func (c *Client) GetRateLimiter() RateLimiter {
+	return c.rateLimiter
 }
