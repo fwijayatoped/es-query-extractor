@@ -67,7 +67,7 @@ func SetRateLimiter(maxSize int, sec int32, batchSize int, url string) ClientOpt
 		rateLimiter := RateLimiter{
 			maxSize:   maxSize,
 			queue:     make([]func(), 0),
-			time:      time.Duration(sec * int32(time.Second)),
+			time:      time.Duration(sec) * time.Second,
 			timer:     time.NewTimer(time.Duration(sec) * time.Second),
 			ch:        make(chan func(), 1),
 			batchSize: batchSize,
