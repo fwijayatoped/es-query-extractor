@@ -1,7 +1,6 @@
 package esqueryextractor
 
 import (
-	"log"
 	"time"
 
 	elasticV6 "gopkg.in/olivere/elastic.v6"
@@ -87,17 +86,14 @@ func (r *RateLimiter) schedule() {
 	for {
 		select {
 		case <-r.timer.C:
-			log.Println("[INFO] Timer has expired")
 			r.flush()
 			if r.timer.C != nil && !r.timer.Stop() {
 				r.timer.Reset(r.time)
-				log.Println("[INFO] Timer has been reset")
 			}
 			r.queue = make([]func(), 0)
 		case data := <-r.ch:
 			if len(r.queue) < r.maxSize {
 				r.queue = append(r.queue, data)
-				log.Println("[INFO] Added job to queue")
 			}
 		}
 
@@ -111,7 +107,6 @@ func (r *RateLimiter) flush() {
 		n = len(r.queue)
 	}
 	sema := make(chan struct{}, n)
-	log.Println("[INFO] Flushing queue. Processing", n, "requests.")
 	for _, callback := range r.queue {
 		sema <- struct{}{}
 		go func(callback func()) {
@@ -119,7 +114,6 @@ func (r *RateLimiter) flush() {
 			<-sema
 		}(callback)
 	}
-	log.Println("[INFO] Request executed. Token released.")
 }
 
 func (c *Client) GetService() Service {
