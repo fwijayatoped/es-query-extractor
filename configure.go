@@ -65,7 +65,7 @@ func SetOlivereV6Client(elasticV6Client *elasticV6.Client) ClientOptionFunc {
 	}
 }
 
-func SetRateLimiter(maxSize int, sec int32, batchSize int, url string) ClientOptionFunc {
+func SetRateLimiter(maxSize int, sec int32, batchSize int) ClientOptionFunc {
 	return func(c *Client) error {
 		rateLimiter := &RateLimiter{
 			maxSize:   maxSize,
