@@ -5,7 +5,7 @@ type CommonAttributeContract struct {
 	service     Service
 	fullPath    string
 	usecase     string
-	rateLimiter RateLimiter
+	rateLimiter *RateLimiter
 }
 
 type Contract interface {

@@ -20,7 +20,7 @@ type Olivere6Contract interface {
 const DefaultUsecase = "undefined"
 
 // Start new session
-func NewOlivere6Session(service Service, rateLimiter RateLimiter) Olivere6Contract {
+func NewOlivere6Session(service Service, rateLimiter *RateLimiter) Olivere6Contract {
 	return &Olivere6Builder{
 		commonAttribute: CommonAttributeContract{
 			service:     service,
