@@ -1,6 +1,7 @@
 package esqueryextractor
 
 import (
+	"sync"
 	"time"
 
 	elasticV6 "gopkg.in/olivere/elastic.v6"
@@ -10,7 +11,7 @@ import (
 type Client struct {
 	service         Service
 	olivereV6Client Olivere6Client
-	rateLimiter     RateLimiter
+	rateLimiter     *RateLimiter
 }
 
 type Service string
@@ -32,6 +33,8 @@ type RateLimiter struct {
 	batchSize int
 	// Channel that holds callback functions that are waiting to be executed
 	ch chan func()
+	// Mutex for protect variable from concurrent access
+	mutex sync.Mutex
 }
 
 const DefaultService = "undefined"
@@ -64,13 +67,14 @@ func SetOlivereV6Client(elasticV6Client *elasticV6.Client) ClientOptionFunc {
 
 func SetRateLimiter(maxSize int, sec int32, batchSize int, url string) ClientOptionFunc {
 	return func(c *Client) error {
-		rateLimiter := RateLimiter{
+		rateLimiter := &RateLimiter{
 			maxSize:   maxSize,
 			queue:     make([]func(), 0),
 			time:      time.Duration(sec) * time.Second,
 			timer:     time.NewTimer(time.Duration(sec) * time.Second),
 			ch:        make(chan func(), 1),
 			batchSize: batchSize,
+			mutex:     sync.Mutex{},
 		}
 		c.rateLimiter = rateLimiter
 		go c.rateLimiter.schedule()
@@ -90,18 +94,22 @@ func (r *RateLimiter) schedule() {
 			if r.timer.C != nil && !r.timer.Stop() {
 				r.timer.Reset(r.time)
 			}
+			r.mutex.Lock()
 			r.queue = make([]func(), 0)
+			r.mutex.Unlock()
 		case data := <-r.ch:
+			r.mutex.Lock()
 			if len(r.queue) < r.maxSize {
 				r.queue = append(r.queue, data)
 			}
+			r.mutex.Unlock()
 		}
-
 	}
-
 }
 
 func (r *RateLimiter) flush() {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	n := r.batchSize
 	if len(r.queue) < r.batchSize {
 		n = len(r.queue)
@@ -124,6 +132,6 @@ func (c *Client) GetOlivere6Client() *elasticV6.Client {
 	return c.olivereV6Client
 }
 
-func (c *Client) GetRateLimiter() RateLimiter {
+func (c *Client) GetRateLimiter() *RateLimiter {
 	return c.rateLimiter
 }
