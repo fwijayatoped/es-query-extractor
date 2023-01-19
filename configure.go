@@ -91,12 +91,6 @@ func (r *RateLimiter) schedule() {
 		select {
 		case <-r.timer.C:
 			r.flush()
-			if r.timer.C != nil && !r.timer.Stop() {
-				r.timer.Reset(r.time)
-			}
-			r.mutex.Lock()
-			r.queue = make([]func(), 0)
-			r.mutex.Unlock()
 		case data := <-r.ch:
 			r.mutex.Lock()
 			if len(r.queue) < r.maxSize {
@@ -122,6 +116,10 @@ func (r *RateLimiter) flush() {
 			<-sema
 		}(callback)
 	}
+	if r.timer.C != nil && !r.timer.Stop() {
+		r.timer.Reset(r.time)
+	}
+	r.queue = make([]func(), 0)
 }
 
 func (c *Client) GetService() Service {
