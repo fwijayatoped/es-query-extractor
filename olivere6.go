@@ -20,11 +20,12 @@ type Olivere6Contract interface {
 const DefaultUsecase = "undefined"
 
 // Start new session
-func NewOlivere6Session(service Service) Olivere6Contract {
+func NewOlivere6Session(service Service, rateLimiter *RateLimiter) Olivere6Contract {
 	return &Olivere6Builder{
 		commonAttribute: CommonAttributeContract{
-			service: service,
-			usecase: DefaultUsecase,
+			service:     service,
+			usecase:     DefaultUsecase,
+			rateLimiter: rateLimiter,
 		},
 	}
 }
@@ -51,77 +52,110 @@ func (b *Olivere6Builder) WithUsecase(usecase string) Contract {
 	return b
 }
 
+// Debug-Mode:
+// Define that debug mode will be exclude rate limiter
+func (b *Olivere6Builder) WithDebugMode() Contract {
+	b.commonAttribute.debugMode = true
+	return b
+}
+
 // SendSearchService the request via olivere6 client lib
 func (b *Olivere6Builder) SendSearchService(service elastic.SearchService) {
-	go func() {
-		service.Profile(true)
-		service.Header("Service", string(b.commonAttribute.service))
-		service.Header("Usecase", b.commonAttribute.usecase)
-		service.Header("Query-Type", "_search")
+	service.Profile(true)
+	service.Header("Service", string(b.commonAttribute.service))
+	service.Header("Usecase", b.commonAttribute.usecase)
+	service.Header("Query-Type", "_search")
 
-		if b.keyword != "" {
-			service.Header("Keyword", b.keyword)
-		}
+	if b.keyword != "" {
+		service.Header("Keyword", b.keyword)
+	}
 
-		if b.commonAttribute.fullPath != "" {
-			service.Header("Full-Path", b.commonAttribute.fullPath)
-		}
+	if b.commonAttribute.fullPath != "" {
+		service.Header("Full-Path", b.commonAttribute.fullPath)
+	}
+
+	callback := func() {
 		service.Do(context.Background())
-	}()
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
 
 // SendCountService the request via olivere6 client lib
 func (b *Olivere6Builder) SendCountService(service elastic.CountService) {
-	go func() {
-		service.Header("Service", string(b.commonAttribute.service))
-		service.Header("Usecase", b.commonAttribute.usecase)
-		service.Header("Query-Type", "_count")
+	service.Header("Service", string(b.commonAttribute.service))
+	service.Header("Usecase", b.commonAttribute.usecase)
+	service.Header("Query-Type", "_count")
 
-		if b.keyword != "" {
-			service.Header("Keyword", b.keyword)
-		}
+	if b.keyword != "" {
+		service.Header("Keyword", b.keyword)
+	}
 
-		if b.commonAttribute.fullPath != "" {
-			service.Header("Full-Path", b.commonAttribute.fullPath)
-		}
+	if b.commonAttribute.fullPath != "" {
+		service.Header("Full-Path", b.commonAttribute.fullPath)
+	}
 
+	callback := func() {
 		service.Do(context.Background())
-	}()
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
 
 // SendMgetService the request via olivere6 client lib
 func (b *Olivere6Builder) SendMgetService(service elastic.MgetService) {
-	go func() {
-		service.Header("Service", string(b.commonAttribute.service))
-		service.Header("Usecase", b.commonAttribute.usecase)
-		service.Header("Query-Type", "_mget")
+	service.Header("Service", string(b.commonAttribute.service))
+	service.Header("Usecase", b.commonAttribute.usecase)
+	service.Header("Query-Type", "_mget")
 
-		if b.keyword != "" {
-			service.Header("Keyword", b.keyword)
-		}
+	if b.keyword != "" {
+		service.Header("Keyword", b.keyword)
+	}
 
-		if b.commonAttribute.fullPath != "" {
-			service.Header("Full-Path", b.commonAttribute.fullPath)
-		}
+	if b.commonAttribute.fullPath != "" {
+		service.Header("Full-Path", b.commonAttribute.fullPath)
+	}
 
+	callback := func() {
 		service.Do(context.Background())
-	}()
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
 
 // SendMultiSearchService the request via olivere6 client lib
 func (b *Olivere6Builder) SendMultiSearchService(service elastic.MultiSearchService) {
-	go func() {
-		service.Header("Service", string(b.commonAttribute.service))
-		service.Header("Usecase", b.commonAttribute.usecase)
-		service.Header("Query-Type", "_msearch")
-		if b.keyword != "" {
-			service.Header("Keyword", b.keyword)
-		}
+	service.Header("Service", string(b.commonAttribute.service))
+	service.Header("Usecase", b.commonAttribute.usecase)
+	service.Header("Query-Type", "_msearch")
 
-		if b.commonAttribute.fullPath != "" {
-			service.Header("Full-Path", b.commonAttribute.fullPath)
-		}
+	if b.keyword != "" {
+		service.Header("Keyword", b.keyword)
+	}
 
+	if b.commonAttribute.fullPath != "" {
+		service.Header("Full-Path", b.commonAttribute.fullPath)
+	}
+
+	callback := func() {
 		service.Do(context.Background())
-	}()
+	}
+
+	if b.commonAttribute.debugMode {
+		go callback()
+	} else {
+		b.commonAttribute.rateLimiter.AddFunc(callback)
+	}
 }
