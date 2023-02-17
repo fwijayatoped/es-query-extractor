@@ -98,6 +98,8 @@ func (b *GoElastic7Builder) SendSearchRequest(searchRequest []func(*esapi.Search
 	}
 
 	searchRequest = append(searchRequest, b.client.Search.WithHeader(additionalHeader))
+	searchRequest = append(searchRequest, b.client.Search.WithBody(&buffer))
+
 	callback := func() {
 		b.client.Search(searchRequest...)
 	}
