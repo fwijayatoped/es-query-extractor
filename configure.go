@@ -4,19 +4,23 @@ import (
 	"sync"
 	"time"
 
+	elasticV7 "github.com/elastic/go-elasticsearch/v7"
 	elasticV6 "gopkg.in/olivere/elastic.v6"
 )
 
 // Contains all possible client that supported by this package
 type Client struct {
-	service         Service
-	olivereV6Client Olivere6Client
-	rateLimiter     *RateLimiter
+	service           Service
+	olivereV6Client   Olivere6Client
+	goElasticV7Client GoElastic7Client
+	rateLimiter       *RateLimiter
 }
 
 type Service string
 
 type Olivere6Client *elasticV6.Client
+
+type GoElastic7Client *elasticV7.Client
 
 type ClientOptionFunc func(*Client) error
 
@@ -62,6 +66,13 @@ func SetService(service Service) ClientOptionFunc {
 func SetOlivereV6Client(elasticV6Client *elasticV6.Client) ClientOptionFunc {
 	return func(c *Client) error {
 		c.olivereV6Client = elasticV6Client
+		return nil
+	}
+}
+
+func SetGoElasticV7Client(goElasticV7Client *elasticV7.Client) ClientOptionFunc {
+	return func(c *Client) error {
+		c.goElasticV7Client = goElasticV7Client
 		return nil
 	}
 }
@@ -129,6 +140,10 @@ func (c *Client) GetService() Service {
 
 func (c *Client) GetOlivere6Client() *elasticV6.Client {
 	return c.olivereV6Client
+}
+
+func (c *Client) GetGoElastic7Client() *elasticV7.Client {
+	return c.goElasticV7Client
 }
 
 func (c *Client) GetRateLimiter() *RateLimiter {
