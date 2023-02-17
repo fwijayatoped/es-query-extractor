@@ -38,6 +38,7 @@ type RateLimiter struct {
 }
 
 const DefaultService = "undefined"
+const DefaultUsecase = "undefined"
 
 func Initialize(options ...ClientOptionFunc) (*Client, error) {
 	c := &Client{

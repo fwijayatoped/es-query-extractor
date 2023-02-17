@@ -1,8 +1,11 @@
 module github.com/fwijayatoped/es-query-extractor
 
-go 1.18
+go 1.17
 
-require gopkg.in/olivere/elastic.v6 v6.2.37
+require (
+	github.com/elastic/go-elasticsearch/v7 v7.13.0
+	gopkg.in/olivere/elastic.v6 v6.2.37
+)
 
 require (
 	github.com/fortytw2/leaktest v1.3.0 // indirect
