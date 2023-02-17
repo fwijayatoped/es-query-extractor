@@ -17,6 +17,7 @@ type GoElastic7Builder struct {
 // Interface if client using goelastic7 client lib
 type GoElastic7Contract interface {
 	Contract
+	WithClient(client *elastic.Client) Contract
 	SendSearchRequest(searchRequest []func(*esapi.SearchRequest), source interface{})
 }
 
