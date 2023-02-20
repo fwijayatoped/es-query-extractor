@@ -17,8 +17,6 @@ type Olivere6Contract interface {
 	SendSearchService(searchService elastic.SearchService)
 }
 
-const DefaultUsecase = "undefined"
-
 // Start new session
 func NewOlivere6Session(service Service, rateLimiter *RateLimiter) Olivere6Contract {
 	return &Olivere6Builder{
