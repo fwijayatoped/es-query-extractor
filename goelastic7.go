@@ -68,7 +68,7 @@ func (b *GoElastic7Builder) WithDebugMode() Contract {
 	return b
 }
 
-// SendSearchService the request via olivere6 client lib
+// SendSearchRequest the request via go-elasticsearch client lib
 func (b *GoElastic7Builder) SendSearchRequest(searchRequest []func(*esapi.SearchRequest), source interface{}) {
 	if b.client == nil {
 		return
