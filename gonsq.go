@@ -15,14 +15,13 @@ type GoNSQBuilder struct {
 type GoNSQContract interface {
 	Contract
 	WithProducer(producer *nsq.Producer) Contract
-	SendSearchRequest(index string, header map[string]string, source interface{}, resTotalHitsAsInt bool)
+	SendSearchRequest(index string, header map[string]string, source interface{})
 }
 
 type NSQMessage struct {
-	Index             string                 `json:"index"`
-	Header            map[string]string      `json:"header"`
-	Query             map[string]interface{} `json:"query"`
-	ResTotalHitsAsInt bool                   `json:"rest_total_hits_as_int"`
+	Index  string                 `json:"index"`
+	Header map[string]string      `json:"header"`
+	Query  map[string]interface{} `json:"query"`
 }
 
 func NewGoNSQSession(service Service) GoNSQContract {
@@ -70,7 +69,7 @@ func (b *GoNSQBuilder) WithDebugMode() Contract {
 }
 
 // SendSearchRequest the request via go-elasticsearch client lib
-func (b *GoNSQBuilder) SendSearchRequest(index string, header map[string]string, source interface{}, resTotalHitsAsInt bool) {
+func (b *GoNSQBuilder) SendSearchRequest(index string, header map[string]string, source interface{}) {
 	if b.producer == nil {
 		return
 	}
@@ -91,10 +90,9 @@ func (b *GoNSQBuilder) SendSearchRequest(index string, header map[string]string,
 	}
 
 	nsqMessage := NSQMessage{
-		Index:             index,
-		Header:            header,
-		Query:             query,
-		ResTotalHitsAsInt: resTotalHitsAsInt,
+		Index:  index,
+		Header: header,
+		Query:  query,
 	}
 
 	payload, _ := json.Marshal(nsqMessage)
