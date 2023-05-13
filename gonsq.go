@@ -68,7 +68,7 @@ func (b *GoNSQBuilder) WithDebugMode() Contract {
 	return b
 }
 
-// SendSearchRequest the request via go-elasticsearch client lib
+// SendSearchRequest the request via go-nsq lib
 func (b *GoNSQBuilder) SendSearchRequest(index string, header map[string]string, source interface{}) {
 	if b.producer == nil {
 		return
