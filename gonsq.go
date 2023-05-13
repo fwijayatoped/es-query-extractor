@@ -19,9 +19,9 @@ type GoNSQContract interface {
 }
 
 type NSQMessage struct {
-	Index  string                 `json:"index"`
-	Header map[string]string      `json:"header"`
-	Query  map[string]interface{} `json:"query"`
+	Index  string            `json:"index"`
+	Header map[string]string `json:"header"`
+	Query  []byte            `json:"query"`
 }
 
 func NewGoNSQSession(service Service) GoNSQContract {
@@ -89,10 +89,12 @@ func (b *GoNSQBuilder) SendSearchRequest(index string, header map[string]string,
 		header["Full-Path"] = b.commonAttribute.fullPath
 	}
 
+	queryJSON, _ := json.Marshal(query)
+
 	nsqMessage := NSQMessage{
 		Index:  index,
 		Header: header,
-		Query:  query,
+		Query:  queryJSON,
 	}
 
 	payload, _ := json.Marshal(nsqMessage)
