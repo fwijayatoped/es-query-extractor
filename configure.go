@@ -5,6 +5,7 @@ import (
 	"time"
 
 	elasticV7 "github.com/elastic/go-elasticsearch/v7"
+	nsq "github.com/nsqio/go-nsq"
 	elasticV6 "gopkg.in/olivere/elastic.v6"
 )
 
@@ -14,6 +15,7 @@ type Client struct {
 	olivereV6Client   Olivere6Client
 	goElasticV7Client GoElastic7Client
 	rateLimiter       *RateLimiter
+	nsqProducer       NSQProducer
 }
 
 type Service string
@@ -21,6 +23,8 @@ type Service string
 type Olivere6Client *elasticV6.Client
 
 type GoElastic7Client *elasticV7.Client
+
+type NSQProducer *nsq.Producer
 
 type ClientOptionFunc func(*Client) error
 
@@ -134,6 +138,13 @@ func (r *RateLimiter) flush() {
 	r.queue = make([]func(), 0)
 }
 
+func SetNSQProducer(nsqProducer *nsq.Producer) ClientOptionFunc {
+	return func(c *Client) error {
+		c.nsqProducer = nsqProducer
+		return nil
+	}
+}
+
 func (c *Client) GetService() Service {
 	return c.service
 }
@@ -148,4 +159,8 @@ func (c *Client) GetGoElastic7Client() *elasticV7.Client {
 
 func (c *Client) GetRateLimiter() *RateLimiter {
 	return c.rateLimiter
+}
+
+func (c *Client) GetNSQProducer() *nsq.Producer {
+	return c.nsqProducer
 }
