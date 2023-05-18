@@ -98,5 +98,5 @@ func (b *GoNSQBuilder) SendSearchRequest(index string, header map[string]string,
 	}
 
 	payload, _ := json.Marshal(nsqMessage)
-	b.producer.Publish("ace-query-extractor", payload)
+	b.producer.Publish("query_extractor_ace", payload)
 }
